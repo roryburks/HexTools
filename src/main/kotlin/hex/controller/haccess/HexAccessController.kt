@@ -7,9 +7,9 @@ import rb.owl.Observable
 
 interface IHexAccessController {
     fun setAccess(hexAccess: IHexAccess)
-    val lines : List<ByteArray>
-
+    fun getLines( start: Long, count: Int) : List<ByteArray>
     val haccesObs : IObservable<()->Unit>
+    val length : Long
 }
 
 class HexAccessController : IHexAccessController{
@@ -20,14 +20,13 @@ class HexAccessController : IHexAccessController{
         haccesObs.trigger { it.invoke() }
     }
 
-    override val lines: List<ByteArray>
-        get() {
-            val access = access ?: return emptyList()
-
-            return access.getLines(0, 20)
-        }
+    override fun getLines(start: Long, count: Int)  : List<ByteArray>{
+        val access = access ?: return emptyList()
+        return access.getLines(start, count)
+    }
 
     override val haccesObs = Observable<()->Unit>()
+    override val length: Long get() = access?.length ?: 0L
 }
 
 object HexAccessControllerProvider {

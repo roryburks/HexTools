@@ -18,6 +18,10 @@ object MathUtil {
         return sqrt(((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)).d).f
     }
 
+    fun clip(min: Long, value: Long, max: Long): Long {
+        if (value < min) return min
+        return if (value > max) max else value
+    }
     fun clip(min: Int, value: Int, max: Int): Int {
         if (value < min) return min
         return if (value > max) max else value
