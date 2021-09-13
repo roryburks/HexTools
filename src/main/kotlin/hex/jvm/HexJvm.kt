@@ -1,11 +1,15 @@
 package hex.jvm
 
+import hex.controller.commands.GlobalCommandRunnerProvider
+import hex.controller.haccess.HexAccessControllerProvider
+import hex.jvm.di.JvmDiHexCore
 import hex.jvm.view.RootWindow
 import sgui.swing.SwingComponentProvider
 import javax.swing.SwingUtilities
 import javax.swing.WindowConstants
 
 fun main(args: Array<String>) {
+    JvmDiHexCore.init()
     println("run")
 
     SwingUtilities.invokeAndWait {
@@ -14,7 +18,10 @@ fun main(args: Array<String>) {
 }
 
 fun initUi() {
-    val window = RootWindow(SwingComponentProvider)
+    val window = RootWindow(
+        SwingComponentProvider,
+        GlobalCommandRunnerProvider.runner,
+        HexAccessControllerProvider.controller)
     window.pack()
     window.isLocationByPlatform = true
     window.isVisible = true
