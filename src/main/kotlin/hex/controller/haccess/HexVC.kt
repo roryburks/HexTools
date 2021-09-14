@@ -18,10 +18,26 @@ class HexVC(
             val to = if( totalNumLines == 0L) 0L
                     else MathUtil.clip(0L, value, totalNumLines -1)
             if(field != to) { field = to; _rebuild()}}
-    var offsetPointer : Int = 0
+    var selected:  Long? = null
+        set(value) { field = value; setToSelected()}
 
 
+    // Selection
+    fun setCaret( caret: Int) {
+        val row = caret / 49
+        val hOffset: Int
+        val rem = caret % 49
+        if( rem < 24) {
+            hOffset = rem / 3
+        }
+        else {
+            hOffset = (rem - 1) / 3
+        }
+        selected = (row + lineOffset)*16 + hOffset
 
+    }
+
+    // Internal Functions
     private fun _rebuild() {
         val numLines = totalNumLines
         val lineOffset = MathUtil.clip(0L, lineOffset, numLines-1)
@@ -45,10 +61,28 @@ class HexVC(
 
 
         view.setScrollParams(0, numLines.i, lineOffset.i, displayLineCount)
+        setToSelected()
+    }
+
+    private fun setToSelected(){
+        val sel = selected ?: return
+        val off = sel - (lineOffset*16)
+        val line = (off / 16).toInt()
+        val hexOff = (off % 16).toInt()
+        val hOff = if( hexOff > 7) 1 + 3*hexOff
+            else 3*hexOff
+        view.setCaret(hOff + line*49)
+
+
     }
 
     // Binds
-    val hexK = _controller.haccesObs.addObserver(Observer { _rebuild() }, false)
+    val hexK = _controller.haccesObs.addObserver(Observer
+    {
+        selected = null
+        lineOffset = 0
+        _rebuild()
+    }, false)
 }
 
 interface IHexView {
@@ -56,6 +90,7 @@ interface IHexView {
     fun setAsciiText(text: String)
     fun setOffsetText(text: String)
     fun setScrollParams( min: Int, max: Int, pos: Int, width: Int)
+    fun setCaret(caret: Int)
 }
 
 object HexVCProvider {
