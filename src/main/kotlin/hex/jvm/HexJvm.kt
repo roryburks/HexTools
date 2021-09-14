@@ -1,6 +1,7 @@
 package hex.jvm
 
 import hex.controller.commands.GlobalCommandRunnerProvider
+import hex.controller.commands.hotkeys.HotkeyManagerProvider
 import hex.controller.haccess.HexAccessControllerProvider
 import hex.jvm.di.JvmDiHexCore
 import hex.jvm.view.RootWindow
@@ -21,7 +22,8 @@ fun initUi() {
     val window = RootWindow(
         SwingComponentProvider,
         GlobalCommandRunnerProvider.runner,
-        HexAccessControllerProvider.controller)
+        HexAccessControllerProvider.controller,
+        HotkeyManagerProvider.manager)
     window.pack()
     window.isLocationByPlatform = true
     window.isVisible = true

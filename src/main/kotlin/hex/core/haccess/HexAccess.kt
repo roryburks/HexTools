@@ -28,7 +28,7 @@ class BufferedHexAccess(
         for ( i in start until (start+count))
         {
             val read = io.readInto(buffer, 0, 16)
-            if( read == 0)
+            if( read <= 0)
                 break
 
             val out = ByteArray(read)
