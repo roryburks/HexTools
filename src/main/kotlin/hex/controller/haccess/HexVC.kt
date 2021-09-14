@@ -10,16 +10,31 @@ class HexVC(
 {
     lateinit var view : IHexView
 
+    val totalNumLines : Long get() = (_controller.length + 15) / 16
+    val length : Long get() = _controller.length
+
     var displayLineCount : Int = 20
         set(value) { field = value; _rebuild()}
-    val totalNumLines : Long get() = (_controller.length + 15) / 16
     var lineOffset : Long = 0
         set(value) {
             val to = if( totalNumLines == 0L) 0L
                     else MathUtil.clip(0L, value, totalNumLines -1)
             if(field != to) { field = to; _rebuild()}}
     var selected:  Long? = null
-        set(value) { field = value; setToSelected()}
+        set(value)
+        {
+            val to: Long? =
+                if( value == null)
+                    null
+                else {
+                    if (length == 0L) 0
+                    else MathUtil.clip(0L, value, length)
+                }
+            if( field != to) {
+                field = to
+                setToSelected()
+            }
+        }
 
 
     // Selection

@@ -1,5 +1,7 @@
 package hex.controller.commands.hotkeys
 
+import hex.controller.commands.SelectionTraversalModule
+import hex.controller.commands.SelectionTraversalModuleProvider
 import hex.controller.haccess.HexVC
 import hex.controller.haccess.HexVCProvider
 import hex.core.di.DiHexCore
@@ -12,25 +14,19 @@ interface IHotkeyManager {
 
 class HotkeyManager(
     val dialog: IDialog,
-    val hexVc: HexVC
+    val selectionTraversalModule: SelectionTraversalModule
 ) : IHotkeyManager{
     var lastSelectedOffset: Long? = null
     override fun actOnHotkey(hk: Hotkey) {
-        println("A")
-
         if( hk.keyCode == HotkeyCodes.VK_G && hk.pressingCtrl) {
-            val offset = dialog.pickOffset(lastSelectedOffset) ?: return
-            val rowOffsetIsIn = offset / 16
-            val curRow = hexVc.lineOffset
-            if( rowOffsetIsIn < curRow) {
-                hexVc.lineOffset = rowOffsetIsIn
-            }
-            else if( rowOffsetIsIn >= curRow + hexVc.displayLineCount) {
-                hexVc.lineOffset = rowOffsetIsIn - hexVc.displayLineCount + 1
-            }
-            lastSelectedOffset = offset
-            hexVc.selected = lastSelectedOffset
+            val desiredPositionSelect = dialog.pickOffset(lastSelectedOffset) ?: return
+            lastSelectedOffset = desiredPositionSelect
+            selectionTraversalModule.doSelection(desiredPositionSelect)
         }
+        if( hk.keyCode == HotkeyCodes.VK_LEFT) selectionTraversalModule.goLeft()
+        if( hk.keyCode == HotkeyCodes.VK_RIGHT) selectionTraversalModule.goRight()
+        if( hk.keyCode == HotkeyCodes.VK_UP) selectionTraversalModule.goUp()
+        if( hk.keyCode == HotkeyCodes.VK_DOWN) selectionTraversalModule.goDown()
     }
 
 }
@@ -39,6 +35,6 @@ object HotkeyManagerProvider {
     val manager by lazy {
         HotkeyManager(
             DiHexCore.dialog,
-            HexVCProvider.vc)
+            SelectionTraversalModuleProvider.module)
     }
 }
