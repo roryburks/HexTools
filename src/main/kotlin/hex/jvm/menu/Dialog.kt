@@ -2,6 +2,7 @@ package hex.jvm.menu
 
 import hex.core.di.IDialog
 import javax.swing.JFileChooser
+import javax.swing.JOptionPane
 import javax.swing.filechooser.FileNameExtensionFilter
 
 
@@ -18,5 +19,10 @@ class Dialog : IDialog {
             return fc.selectedFile.absolutePath
         }
         return null
+    }
+
+    override fun pickOffset(default: Long?): Long? {
+        val x = JOptionPane.showInputDialog("Select ") ?: return null
+        return x.toLongOrNull(16)
     }
 }
